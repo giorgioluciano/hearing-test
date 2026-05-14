@@ -3,36 +3,49 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Frequency Hearing Tester</title>
+<title>Frequency Hearing Tester — Mini app</title>
 <style>
 :root{
 --bg:#f7f7f8;--card:#ffffff;--muted:#6b6b6b;--accent:#046d76;--accent2:#0b5a60;--danger:#8b3b2b;--border:#dedcdc;--radius:14px;
 }
-body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);margin:0;color:#111;}
-.wrap{max-width:900px;margin:24px auto;padding:28px;}
-h1{margin:0 0 8px;font-size:28px;}
-p{margin:0 0 14px;color:var(--muted);}
-.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);margin:0;color:#111;line-height:1.5;}
+.container{max-width:980px;margin:28px auto;padding:28px;}
+.header{display:flex;gap:18px;align-items:center;flex-wrap:wrap;}
+.title{font-size:34px;margin:0;}
+.lead{color:var(--muted);margin:6px 0 0;}
+.grid{display:grid;gap:18px;grid-template-columns:1fr 380px;}
 .card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:var(--radius);}
-label{display:block;margin:10px 0 6px;font-weight:700;}
-input[type=range]{width:100%;}
-.big{font-size:28px;font-weight:800;margin:8px 0;}
 .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
 button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:999px;cursor:pointer;font-weight:700;}
 button.secondary{background:transparent;border:1px solid var(--border);color:#111;}
+.big{font-size:28px;font-weight:800;margin:8px 0;}
 .readout{background:#fafafa;padding:10px;border-radius:10px;border:1px solid var(--border);margin-top:10px;}
 .mini{color:var(--muted);font-size:14px;margin-top:8px;}
 .warn{color:var(--danger);font-weight:800;}
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-td,th{padding:8px;border-bottom:1px solid var(--border);text-align:left;}
+.meta{font-size:13px;color:var(--muted);margin-top:10px;}
+.download{display:inline-block;margin-top:12px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--accent2);text-decoration:none;font-weight:700;}
+footer{margin-top:18px;font-size:13px;color:var(--muted);}
 </style>
 </head>
 <body>
-<div class="wrap">
-<h1>Frequency Hearing Tester</h1>
-<p>Generate a pure tone, run an automatic sweep, or play a two-tone example (350 Hz + 440 Hz) to hear interaction and beats. For curiosity only—not a clinical test.</p>
+<div class="container">
+<header class="header">
+<div>
+<h1 class="title">Frequency Hearing Tester</h1>
+<div class="lead">A small web app to generate pure tones, run a frequency sweep, or play two tones to hear beats. For curiosity only — not a clinical test.</div>
+</div>
+</header>
 
-<div class="grid">
+<main class="card" style="margin-top:18px;">
+<section style="margin-bottom:14px;">
+<h2>About</h2>
+<p>This page hosts a tiny Web Audio demo that generates sine tones and simple sweeps so you can explore how frequency affects perception. Use good headphones, keep volume low, and remember this is educational — not diagnostic. If you prefer, download the full standalone HTML file to run locally.</p>
+<p class="meta">Click the button below to download the page as a single HTML file.</p>
+<a id="downloadLink" class="download" href="#" download="hearing-test.html">Download standalone HTML</a>
+</section>
+
+<section class="grid">
+<!-- App -->
 <section class="card">
 <h2>Generator</h2>
 <label for="freq">Frequency (Hz)</label>
@@ -57,18 +70,15 @@ td,th{padding:8px;border-bottom:1px solid var(--border);text-align:left;}
 <button id="upBtn">Sweep up</button>
 <button id="downBtn" class="secondary">Sweep down</button>
 </div>
-</section>
 
-<section class="card">
-<h2>Notes & mark</h2>
+<h3 style="margin-top:14px;">Mark</h3>
 <div class="readout">Last clearly heard frequency: <strong id="heardMark">—</strong></div>
 <div class="controls">
 <button id="markBtn">I hear it clearly</button>
 <button id="clearBtn" class="secondary">Clear</button>
 </div>
-<p class="mini">Good headphones and a quiet room improve reliability. Above ~10–15 kHz results vary with age and equipment.</p>
 
-<table>
+<table style="margin-top:12px">
 <thead>
 <tr><th>Band</th><th>Typical role</th></tr>
 </thead>
@@ -81,19 +91,27 @@ td,th{padding:8px;border-bottom:1px solid var(--border);text-align:left;}
 </tbody>
 </table>
 </section>
-</div>
 
-<section class="card" style="margin-top:18px;">
-<h2>Warnings</h2>
+<!-- Notes -->
+<aside class="card">
+<h2>Notes & warnings</h2>
 <ul>
 <li><span class="warn">Do not use loud volumes.</span></li>
 <li>Cheap speakers/headphones may misrepresent high frequencies above 10 kHz.</li>
 <li>This is not a substitute for a professional audiology test.</li>
 </ul>
+<div class="mini" style="margin-top:12px;">If audio doesn't start automatically, press Start to activate the AudioContext — most browsers require a user gesture for audio playback.</div>
+</aside>
 </section>
+
+<footer style="margin-top:18px;">
+<div>Created by Giorgio Luciano — for demonstration purposes. Keep volume low and use headphones.</div>
+</footer>
+</main>
 </div>
 
 <script>
+// App logic (corrected)
 const freq = document.getElementById('freq');
 const vol = document.getElementById('vol');
 const freqOut = document.getElementById('freqOut');
@@ -122,14 +140,13 @@ gain.connect(ctx.destination);
 gain.gain.value = parseFloat(vol.value);
 osc.frequency.value = parseFloat(freq.value);
 osc.start();
-}
-}
+} }
 
 function stopAudio() {
 if (sweepTimer) cancelAnimationFrame(sweepTimer);
 sweepTimer = null;
-if (osc) { try { osc.stop(); } catch(e){}; osc.disconnect(); gain.disconnect(); osc = null; gain = null; }
-if (oscA) { try { oscA.stop(); oscB.stop(); } catch(e){}; oscA.disconnect(); oscB.disconnect(); gainA.disconnect(); gainB.disconnect(); oscA = null; oscB = null; gainA = null; gainB = null; }
+if (osc) { try { osc.stop(); } catch(e){}; try{osc.disconnect(); gain.disconnect();}catch(e){}; osc = null; gain = null; }
+if (oscA) { try { oscA.stop(); oscB.stop(); } catch(e){}; try{oscA.disconnect(); oscB.disconnect(); gainA.disconnect(); gainB.disconnect();}catch(e){}; oscA = null; oscB = null; gainA = null; gainB = null; }
 }
 
 function setFreq(v) {
@@ -152,8 +169,7 @@ const ratio = up ? t : (1 - t);
 const hz = Math.round(min * Math.pow(max / min, ratio));
 setFreq(hz);
 if (t < 1) sweepTimer = requestAnimationFrame(step);
-}
-sweepTimer = requestAnimationFrame(step);
+} sweepTimer = requestAnimationFrame(step);
 }
 
 freq.addEventListener('input', e => setFreq(e.target.value));
@@ -167,7 +183,7 @@ document.getElementById('upBtn').addEventListener('click', () => logSweep(true))
 document.getElementById('downBtn').addEventListener('click', () => logSweep(false));
 
 document.getElementById('markBtn').addEventListener('click', () => {
-heardMark.textContent = ${Math.round(freq.value)} Hz;
+heardMark.textContent = Math.round(freq.value) + ' Hz';
 });
 document.getElementById('clearBtn').addEventListener('click', () => heardMark.textContent = '—');
 
@@ -187,12 +203,31 @@ gainB.gain.value = parseFloat(vol.value)/2;
 oscA.connect(gainA); oscB.connect(gainB);
 gainA.connect(ctx.destination); gainB.connect(ctx.destination);
 oscA.start(); oscB.start();
-// stop after 6 seconds automatically
-setTimeout(() => { try { oscA.stop(); oscB.stop(); } catch(e){}; oscA.disconnect(); oscB.disconnect(); gainA.disconnect(); gainB.disconnect(); oscA=null;oscB=null;gainA=null;gainB=null; }, 6000);
+setTimeout(() => { try { oscA.stop(); oscB.stop(); } catch(e){}; try{oscA.disconnect(); oscB.disconnect(); gainA.disconnect(); gainB.disconnect();}catch(e){}; oscA=null;oscB=null;gainA=null;gainB=null; }, 6000);
 });
 
 // initialize display
 setFreq(freq.value);
+
+// Create downloadable blob of the current full HTML document for the Download button
+(function attachDownload() {
+const docHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+const blob = new Blob([docHtml], {type: 'text/html'});
+const url = URL.createObjectURL(blob);
+const a = document.getElementById('downloadLink');
+a.href = url;
+// revoke object URL when page unloads to free memory
+window.addEventListener('unload', () => { URL.revokeObjectURL(url); });
+})();
+
+// Short clear copyright/disclaimer line (concise, best practice)
+
 </script>
 </body>
 </html>
+
+Notes and provenance:
+
+The downloadable-link approach uses the Blob + URL.createObjectURL technique shown in common JS guides.
+
+Short disclaimer guidance follows concise best-practice recommendations to be simple and explici
